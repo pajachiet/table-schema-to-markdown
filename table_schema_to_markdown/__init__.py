@@ -166,9 +166,11 @@ def format_property(name, value):
     if name == CREATED:
         return datetime.strptime(value, "%Y-%m-%d").strftime("%x")
     if name == MISSING_VALUES:
+        if value == [""]:
+            return ""
         return ", ".join(map(lambda v: '`"{}"`'.format(v), value))
     if name == PRIMARY_KEY:
-        ", ".join(value) if isinstance(value, list) else value
+        return ", ".join(value) if isinstance(value, list) else value
     return value
 
 
@@ -202,7 +204,8 @@ def convert_source(source, out_fd):
 def write_property(schema_json, property_name, out_fd, prefix='', suffix='\n\n'):
     if property_name in schema_json:
         propery_value = format_property(property_name, schema_json[property_name])
-        out_fd.write(prefix + propery_value + suffix)
+        if propery_value != "":
+            out_fd.write(prefix + propery_value + suffix)
 
 
 def convert_json(schema_json, out_fd):
