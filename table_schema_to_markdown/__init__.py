@@ -209,7 +209,11 @@ def convert_json(schema_json, out_fd):
     """ Converts table schema data to markdown """
 
     # Header
-    write_property(schema_json, TITLE, out_fd, '## ')
+    if NAME in schema_json:
+        write_property(schema_json, NAME, out_fd, '## ')
+        write_property(schema_json, TITLE, out_fd)
+    else:
+        write_property(schema_json, TITLE, out_fd, '## ')
     write_property(schema_json, DESCRIPTION, out_fd)
 
     for property_name in SCHEMA_PROP_MAP.keys():
