@@ -17,7 +17,6 @@ SCHEMA_PROP_MAP = {
     "example": "Données d'exemple",
 }
 
-
 TYPE_MAP = {
     "array": "liste",
     "boolean": "booléen",
@@ -153,6 +152,10 @@ def format_constraints(col_content):
 def format_property(name, value):
     if name == "created":
         return datetime.strptime(value, "%Y-%m-%d").strftime("%x")
+    if name == "missingValues":
+        return ", ".join(map(lambda v: '`"{}"`'.format(v), value))
+    if name == "primaryKey":
+        ", ".join(value) if isinstance(value, list) else value
     return value
 
 
@@ -183,51 +186,28 @@ def convert_source(source, out_fd):
     convert_json(schema, out_fd)
 
 
+def write_property(schema_json, property_name, out_fd, prefix='', suffix='\n\n'):
+    if property_name in schema_json:
+        propery_value = format_property(property_name, schema_json[property_name])
+        out_fd.write(prefix + propery_value + suffix)
+
+
 def convert_json(schema_json, out_fd):
     """ Converts table schema data to markdown """
 
     # Header
-    if "title" in schema_json:
-        out_fd.write("## {}".format(schema_json["title"]))
-        out_fd.write("\n\n")
-
-    if "description" in schema_json:
-        out_fd.write(schema_json["description"])
-        out_fd.write("\n\n")
-
-    if "version" in schema_json:
-        out_fd.write("## Version {}".format(schema_json.get("version")))
-        out_fd.write("\n\n")
+    write_property(schema_json, "title", out_fd, '## ')
+    write_property(schema_json, "description", out_fd)
+    write_property(schema_json, "version", out_fd, '## Version')
 
     for property_name in ("author", "contributor", "created", "homepage", "example"):
-        property_value = schema_json.get(property_name)
-        if property_value:
-            out_fd.write(
-                "- {} : {}\n".format(
-                    SCHEMA_PROP_MAP[property_name],
-                    format_property(property_name, property_value),
-                )
-            )
+        prefix = "- {} : ".format(SCHEMA_PROP_MAP[property_name])
+        write_property(schema_json, property_name, out_fd, prefix, '\n')
 
-    # Missing values
-    missing_values = schema_json.get("missingValues")
-    if missing_values:
-        out_fd.write(
-            "- Valeurs manquantes : {}\n".format(
-                ", ".join(map(lambda v: '`"{}"`'.format(v), missing_values))
-            )
-        )
+    write_property(schema_json, "missingValues", out_fd, '- Valeurs manquantes : ', '\n')
+    write_property(schema_json, "primaryKey", out_fd, '- Clé primaire : `', '`\n')
 
-    # Primary key
-    primary_key = schema_json.get("primaryKey")
-    if primary_key:
-        out_fd.write(
-            "- Clé primaire : `{}`\n".format(
-                ", ".join(primary_key) if isinstance(primary_key, list) else primary_key
-            )
-        )
-
-    # Foreign keys contraint is more complex than a list of strings, more work required.
+    # Foreign keys constraint is more complex than a list of strings, more work required.
 
     out_fd.write("\n")
 
