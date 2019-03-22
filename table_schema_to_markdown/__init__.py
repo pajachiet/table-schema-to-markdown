@@ -6,16 +6,29 @@ import logging
 from collections import OrderedDict
 from datetime import datetime
 
+NAME = "name"
+TITLE = "title"
+DESCRIPTION = "description"
+PRIMARY_KEY = "primaryKey"
+MISSING_VALUES = "missingValues"
+
+AUTHOR = "author"
+CONTRIBUTOR = "contributor"
+VERSION = "version"
+CREATED = "created"
+HOMEPAGE = "homepage"
+EXAMPLE = "example"
+
 log = logging.getLogger(__name__)
 
-SCHEMA_PROP_MAP = {
-    "author": "Auteur",
-    "contributor": "Contributeurs",
-    "version": "Version",
-    "created": "Schéma créé le",
-    "homepage": "Site web",
-    "example": "Données d'exemple",
-}
+SCHEMA_PROP_MAP = OrderedDict([
+    (AUTHOR, "Auteur"),
+    (CONTRIBUTOR, "Contributeurs"),
+    (CREATED, "Schéma créé le"),
+    (HOMEPAGE, "Site web"),
+    (EXAMPLE, "Données d'exemple"),
+    (VERSION, "Version"),
+])
 
 TYPE_MAP = {
     "array": "liste",
@@ -114,7 +127,7 @@ def format_type(col_content):
 
 
 def format_example(col_content):
-    example = col_content.get("example")
+    example = col_content.get(EXAMPLE)
     if example:
         return "{}|".format(example)
 
@@ -150,11 +163,11 @@ def format_constraints(col_content):
 
 
 def format_property(name, value):
-    if name == "created":
+    if name == CREATED:
         return datetime.strptime(value, "%Y-%m-%d").strftime("%x")
-    if name == "missingValues":
+    if name == MISSING_VALUES:
         return ", ".join(map(lambda v: '`"{}"`'.format(v), value))
-    if name == "primaryKey":
+    if name == PRIMARY_KEY:
         ", ".join(value) if isinstance(value, list) else value
     return value
 
@@ -196,16 +209,15 @@ def convert_json(schema_json, out_fd):
     """ Converts table schema data to markdown """
 
     # Header
-    write_property(schema_json, "title", out_fd, '## ')
-    write_property(schema_json, "description", out_fd)
-    write_property(schema_json, "version", out_fd, '## Version')
+    write_property(schema_json, TITLE, out_fd, '## ')
+    write_property(schema_json, DESCRIPTION, out_fd)
 
-    for property_name in ("author", "contributor", "created", "homepage", "example"):
+    for property_name in SCHEMA_PROP_MAP.keys():
         prefix = "- {} : ".format(SCHEMA_PROP_MAP[property_name])
         write_property(schema_json, property_name, out_fd, prefix, '\n')
 
-    write_property(schema_json, "missingValues", out_fd, '- Valeurs manquantes : ', '\n')
-    write_property(schema_json, "primaryKey", out_fd, '- Clé primaire : `', '`\n')
+    write_property(schema_json, MISSING_VALUES, out_fd, '- Valeurs manquantes : ', '\n')
+    write_property(schema_json, PRIMARY_KEY, out_fd, '- Clé primaire : `', '`\n')
 
     # Foreign keys constraint is more complex than a list of strings, more work required.
 
