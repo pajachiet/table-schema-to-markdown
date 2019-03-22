@@ -213,7 +213,7 @@ def convert_json(schema_json, out_fd):
     missing_values = schema_json.get("missingValues")
     if missing_values:
         out_fd.write(
-            "- Valeurs manquantes : {}\n".format(
+            "- Valeurs manquantes : {}\n".format(
                 ", ".join(map(lambda v: '`"{}"`'.format(v), missing_values))
             )
         )
