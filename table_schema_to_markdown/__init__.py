@@ -213,10 +213,10 @@ def convert_json(schema_json, out_fd):
 
     # Header
     if NAME in schema_json:
-        write_property(schema_json, NAME, out_fd, '## ')
+        write_property(schema_json, NAME, out_fd, '# ')
         write_property(schema_json, TITLE, out_fd)
     else:
-        write_property(schema_json, TITLE, out_fd, '## ')
+        write_property(schema_json, TITLE, out_fd, '# ')
     write_property(schema_json, DESCRIPTION, out_fd)
 
     for property_name in SCHEMA_PROP_MAP.keys():
@@ -232,7 +232,7 @@ def convert_json(schema_json, out_fd):
 
     fields = schema_json.get("fields")
     if fields:
-        out_fd.write("### Modèle de données\n\n")
+        out_fd.write("## Modèle de données\n\n")
         # GitHub Flavored Markdown table header
         headers = ["Nom", "Type", "Description", "Exemple", "Propriétés"]
         out_fd.write("|" + "|".join(headers) + "|\n")

@@ -1,4 +1,4 @@
-## Métadonnées d'un répertoire Git
+# Métadonnées d'un répertoire Git
 
 - Auteur : Antoine Augusti <antoine.augusti@example.com>
 - Schéma créé le : 12/31/18
@@ -6,7 +6,7 @@
 - Valeurs manquantes : `"Nan"`
 - Clé primaire : `repertoire_url`
 
-### Modèle de données
+## Modèle de données
 
 |Nom|Type|Description|Exemple|Propriétés|
 |-|-|-|-|-|
