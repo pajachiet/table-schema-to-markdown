@@ -21,14 +21,16 @@ EXAMPLE = "example"
 
 log = logging.getLogger(__name__)
 
-SCHEMA_PROP_MAP = OrderedDict([
-    (AUTHOR, "Auteur"),
-    (CONTRIBUTOR, "Contributeurs"),
-    (CREATED, "Schéma créé le"),
-    (HOMEPAGE, "Site web"),
-    (EXAMPLE, "Données d'exemple"),
-    (VERSION, "Version"),
-])
+SCHEMA_PROP_MAP = OrderedDict(
+    [
+        (AUTHOR, "Auteur"),
+        (CONTRIBUTOR, "Contributeurs"),
+        (CREATED, "Schéma créé le"),
+        (HOMEPAGE, "Site web"),
+        (EXAMPLE, "Données d'exemple"),
+        (VERSION, "Version"),
+    ]
+)
 
 TYPE_MAP = {
     "array": "liste",
@@ -201,7 +203,7 @@ def convert_source(source, out_fd):
     convert_json(schema, out_fd)
 
 
-def write_property(schema_json, property_name, out_fd, prefix='', suffix='\n\n'):
+def write_property(schema_json, property_name, out_fd, prefix="", suffix="\n\n"):
     if property_name in schema_json:
         propery_value = format_property(property_name, schema_json[property_name])
         if propery_value != "":
@@ -213,18 +215,18 @@ def convert_json(schema_json, out_fd):
 
     # Header
     if NAME in schema_json:
-        write_property(schema_json, NAME, out_fd, '## ')
+        write_property(schema_json, NAME, out_fd, "## ")
         write_property(schema_json, TITLE, out_fd)
     else:
-        write_property(schema_json, TITLE, out_fd, '## ')
+        write_property(schema_json, TITLE, out_fd, "## ")
     write_property(schema_json, DESCRIPTION, out_fd)
 
     for property_name in SCHEMA_PROP_MAP.keys():
         prefix = "- {} : ".format(SCHEMA_PROP_MAP[property_name])
-        write_property(schema_json, property_name, out_fd, prefix, '\n')
+        write_property(schema_json, property_name, out_fd, prefix, "\n")
 
-    write_property(schema_json, MISSING_VALUES, out_fd, '- Valeurs manquantes : ', '\n')
-    write_property(schema_json, PRIMARY_KEY, out_fd, '- Clé primaire : `', '`\n')
+    write_property(schema_json, MISSING_VALUES, out_fd, "- Valeurs manquantes : ", "\n")
+    write_property(schema_json, PRIMARY_KEY, out_fd, "- Clé primaire : `", "`\n")
 
     # Foreign keys constraint is more complex than a list of strings, more work required.
 
